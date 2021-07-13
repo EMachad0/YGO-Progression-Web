@@ -2,7 +2,7 @@
   <Base :guild="guild" :user="user">
     <h1 class="text-center">Deck Builder</h1>
     <div class="container-fluid row p-2 d-flex justify-content-center">
-      <div class="col-3 text-center">
+      <div class="sticky col-3 text-center">
         <img :src="get_img(display)" alt="" class="img-fluid w-100" draggable="false" id="display">
       </div>
       <div class="col-6">
@@ -34,7 +34,7 @@
                    placeholder="Blue-Eyes White Dragon">
           </div>
         </div>
-        <div style="height: 1000px;" class="row overflow-auto m-1 box" id="card-list">
+        <div class="sticky row overflow-auto m-1 box" id="card-list">
           <div v-for="(card, i) in cards" :key="i" style="margin-left: 0;" class="row p-0 box">
             <div class="col-3 m-0 p-0" @mouseover="display=card.cod_img">
               <img :src="get_img(card.cod_img)" alt="" class="img-fluid draggable" :id="'card-list_' + card.card_cod"
@@ -134,6 +134,13 @@ export default {
 .box {
   border: 3px solid white;
   max-height: 50%;
+}
+
+div.sticky {
+  position: -webkit-sticky; /* Safari */
+  position: sticky;
+  top: 0;
+  max-height: 100vh;
 }
 
 </style>
