@@ -29,7 +29,7 @@
       </div>
       <div class="row m-2 d-flex flex-wrap align-items-center justify-content-center justify-content-md-between">
         <div class="col-2">
-          <b-form-select v-model="filters.limit" @change="update_deck_list" class="form-control">
+          <b-form-select v-model="filters.limit" @change="update_deck_list" class="form-control w-50">
             <option selected>30</option>
             <option>60</option>
             <option>100</option>
