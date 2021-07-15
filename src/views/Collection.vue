@@ -86,7 +86,7 @@ export default {
   },
   methods: {
     update_deck_list() {
-      let api_url = `https://ygo-prog-web.herokuapp.com/api/?&guild=${this.guild}&user=${this.user}&limit=${this.filters.limit}&offset=${this.filters.offset * this.filters.limit}&name=%${this.filters.name}%&field=${this.filters.field}&dir=${this.filters.dir}`
+      let api_url = `https://ygo-prog-web.herokuapp.com/collection/?&guild=${this.guild}&user=${this.user}&limit=${this.filters.limit}&offset=${this.filters.offset * this.filters.limit}&name=%${this.filters.name}%&field=${this.filters.field}&dir=${this.filters.dir}`
       console.log(api_url)
       this.loader_class = ""
       axios.get(api_url).then(response => {
