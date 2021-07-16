@@ -98,11 +98,17 @@ export default {
   },
   methods: {
     update_deck_list() {
-      let api_url = `https://ygo-prog-web.herokuapp.com/collection/?&guild=${this.guild}&user=${this.user}&name=%${this.filters.name}%&field=${this.filters.field}&dir=${this.filters.dir}`
-      // console.log(api_url)
       this.loader_class = ""
-      axios.get(api_url).then(response => {
-        this.cards = response.data
+      axios.get('https://ygo-prog-web.herokuapp.com/collection/?', {
+        params: {
+          guild: this.guild,
+          user: this.user,
+          name: (this.filters.name === '' ? null : '%' + this.filters.name + '%'),
+          field: this.filters.field,
+          dir: this.filters.dir,
+        }
+      }).then(response => {
+        this.cards = response.data.cards
         this.loader_class = "hide"
       });
     },

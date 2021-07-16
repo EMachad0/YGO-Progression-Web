@@ -22,30 +22,88 @@
           </select>
         </div>
         <div class="col">
-          <label class="form-label" for="filter-name">Name</label>
+          <label class="form-label" for="set-filter">Set</label>
+          <select v-model="filters.set" @change="update_deck_list" class="form-control" id="set-filter">
+            <option :value="null" selected>any</option>
+            <option v-for="(set, i) in select_options['sets']" :key="i">{{ set }}</option>
+          </select>
+        </div>
+        <div class="col">
+          <label class="form-label" for="rarity-filter">Rarity</label>
+          <select v-model="filters.rarity" @change="update_deck_list" class="form-control" id="rarity-filter">
+            <option :value="null" selected>any</option>
+            <option v-for="(rarity, i) in select_options['rarities']" :key="i">{{ rarity }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row m-2">
+        <div class="col">
+          <label class="form-label" for="filter-name">Name Matching</label>
           <input v-model="filters.name" @change="update_deck_list" class="form-control" type="text" id="filter-name"
                  placeholder="Blue-Eyes White Dragon">
         </div>
+        <div class="col">
+          <label class="form-label" for="filter-text">Text Matching</label>
+          <input v-model="filters.text" @change="update_deck_list" class="form-control" type="text" id="filter-text"
+                 placeholder="Draw two cards">
+        </div>
       </div>
+
+      <div class="row m-2">
+        <div class="col">
+          <label class="form-label" for="filter-type">Card Type</label>
+          <select v-model="filters.type" @change="update_deck_list" class="form-control" id="filter-type">
+            <option :value="null" selected>any</option>
+            <option v-for="(v, i) in select_options['types']" :key="i">{{ v }}</option>
+          </select>
+        </div>
+        <div class="col">
+          <label class="form-label" for="filter-attribute">Attribute</label>
+          <select v-model="filters.attribute" @change="update_deck_list" class="form-control" id="filter-attribute">
+            <option :value="null" selected>any</option>
+            <option v-for="(v, i) in select_options['attributes']" :key="i">{{ v }}</option>
+          </select>
+        </div>
+        <div class="col">
+          <label class="form-label" for="filter-race">Race</label>
+          <select v-model="filters.race" @change="update_deck_list" class="form-control" id="filter-race">
+            <option :value="null" selected>any</option>
+            <option v-for="(v, i) in select_options['races']" :key="i">{{ v }}</option>
+          </select>
+        </div>
+        <div class="col">
+          <label class="form-label" for="filter-archetype">Archetype</label>
+          <select v-model="filters.archetype" @change="update_deck_list;" class="form-control" id="filter-archetype">
+            <option :value="null" selected>any</option>
+            <option v-for="(v, i) in select_options['archetypes']" :key="i">{{ v }}</option>
+          </select>
+        </div>
+      </div>
+
       <div class="row m-2 d-flex flex-wrap align-items-center justify-content-center justify-content-md-between">
         <div class="col-2">
-          <b-form-select v-model="filters.limit" @change="update_deck_list" class="form-control w-50">
-            <option selected>30</option>
-            <option>60</option>
-            <option>100</option>
+          <b-form-select v-model="filters.limit" @change="update_deck_list" class="form-control fit-content">
+            <option :value="30" selected>30</option>
+            <option :value="60">60</option>
+            <option :value="100">100</option>
           </b-form-select>
         </div>
         <div class="col-8 mb-md-0 m-0 text-center align-text-bottom">
-          {{filters.limit * filters.offset}} - {{filters.limit * (1 + filters.offset)}}
+          {{ filters.offset }} -
+          {{ (filters.limit + filters.offset > card_quantity ? card_quantity : filters.limit + filters.offset) }} of
+          {{ card_quantity }}
         </div>
         <div class="col-2 text-end">
           <b-button-group>
-            <b-button size="sm" variant="outline-warning" @click="filters.offset = (filters.offset !== 0? filters.offset-1:0); update_deck_list();"> L </b-button>
-            <b-button size="sm" variant="outline-warning" @click="filters.offset++; update_deck_list();"> R </b-button>
+            <b-button size="sm" variant="outline-warning" @click="offset_sub(); update_deck_list(false);">L</b-button>
+            <b-button size="sm" variant="outline-warning" @click="offset_add(); update_deck_list(false);">R</b-button>
           </b-button-group>
         </div>
       </div>
+
       <hr>
+
       <div class="row" id="card-list">
         <div id="loader" :class="loader_class"></div>
         <div v-for="(card, i) in cards" :key="i" class="col-md-2 m-0 p-0">
@@ -58,8 +116,8 @@
       <div class="row m-2">
         <div class="col text-end">
           <b-button-group>
-            <b-button size="sm" variant="outline-warning" @click="filters.offset = (filters.offset !== 0? filters.offset-1:0); update_deck_list();"> L </b-button>
-            <b-button size="sm" variant="outline-warning" @click="filters.offset++; update_deck_list();"> R </b-button>
+            <b-button size="sm" variant="outline-warning" @click="offset_sub(); update_deck_list(false);">L</b-button>
+            <b-button size="sm" variant="outline-warning" @click="offset_add(); update_deck_list(false);">R</b-button>
           </b-button-group>
         </div>
       </div>
@@ -79,28 +137,85 @@ export default {
   },
   data() {
     return {
+      card_quantity: 0,
       cards: [],
-      filters: {limit: 30, offset: 0, name: '', field: 'name', dir: 'asc'},
+      select_options: {},
+      filters: {
+        limit: 30,
+        offset: 0,
+        name: '',
+        text: '',
+        field: 'name',
+        dir: 'asc',
+        set: null,
+        rarity: null,
+        type: null,
+        attribute: null,
+        race: null,
+        archetype: null
+      },
       loader_class: ""
     }
   },
   methods: {
-    update_deck_list() {
-      let api_url = `https://ygo-prog-web.herokuapp.com/collection/?&guild=${this.guild}&user=${this.user}&limit=${this.filters.limit}&offset=${this.filters.offset * this.filters.limit}&name=%${this.filters.name}%&field=${this.filters.field}&dir=${this.filters.dir}`
-      console.log(api_url)
+    update_deck_list(reset = true) {
+      if (reset) this.offset_reset();
       this.loader_class = ""
-      axios.get(api_url).then(response => {
-        this.cards = response.data
+      axios.get('https://ygo-prog-web.herokuapp.com/collection/?', {
+        params: {
+          guild: this.guild,
+          user: this.user,
+          limit: this.filters.limit,
+          offset: this.filters.offset,
+          name: (this.filters.name === '' ? null : '%' + this.filters.name + '%'),
+          text: (this.filters.text === '' ? null : '%' + this.filters.text + '%'),
+          set: this.filters.set,
+          rarity: this.filters.rarity,
+          field: this.filters.field,
+          dir: this.filters.dir,
+          type: this.filters.type,
+          attribute: this.filters.attribute,
+          race: this.filters.race,
+          archetype: this.filters.archetype
+        }
+      }).then(response => {
+        this.card_quantity = response.data.card_quantity
+        this.cards = response.data.cards
         this.loader_class = "hide"
+      });
+    },
+    update_options() {
+      axios.get('https://ygo-prog-web.herokuapp.com/collection/player_option', {
+        params: {
+          guild: this.guild,
+          user: this.user
+        }
+      }).then(response => {
+        this.select_options = response.data;
       });
     },
     get_img(id) {
       return `https://storage.googleapis.com/ygoprodeck.com/pics/${id}.jpg`
+    },
+    offset_reset() {
+      this.filters.offset = 0;
+    },
+    offset_limit() {
+      if (this.filters.offset < 0) this.filters.offset = 0;
+      if (this.filters.offset > this.card_quantity) this.filters.offset -= this.filters.limit;
+    },
+    offset_add() {
+      this.filters.offset += this.filters.limit;
+      this.offset_limit();
+    },
+    offset_sub() {
+      this.filters.offset -= this.filters.limit;
+      this.offset_limit();
     }
   },
   mounted() {
-    console.log(this.guild, this.user);
     this.update_deck_list();
+    this.update_options();
   },
   props: {
     guild: String,
@@ -114,7 +229,7 @@ export default {
 #loader {
   position: absolute;
   left: 50%;
-  top: 50%;
+  top: 75%;
   z-index: 1;
   width: 64px;
   height: 64px;
@@ -146,6 +261,10 @@ export default {
 
 .hide {
   display: none;
+}
+
+.fit-content {
+  width: fit-content;
 }
 
 </style>
