@@ -83,19 +83,19 @@
         </div>
 
         <div class="row align-items-center">
-          <div class="col-2">
+          <div class="col">
             <b-form-select v-model="filters.limit" @change="update_deck_list" class="form-control fit-content">
               <option :value="30" selected>30</option>
               <option :value="60">60</option>
               <option :value="100">100</option>
             </b-form-select>
           </div>
-          <div class="col-8 mb-md-0 m-0 text-center align-text-bottom">
+          <div class="col mb-md-0 m-0 text-center align-text-bottom">
             {{ filters.offset }} -
             {{ (filters.limit + filters.offset > card_quantity ? card_quantity : filters.limit + filters.offset) }} of
             {{ card_quantity }}
           </div>
-          <div class="col-2 text-end">
+          <div class="col text-end">
             <b-button-group>
               <b-button size="sm" variant="outline-warning" @click="offset_sub(); update_deck_list(false);">
                 <b-icon icon="chevron-left"></b-icon>
