@@ -250,6 +250,10 @@ export default {
   animation: spin 2s linear infinite;
 }
 
+.hide {
+  display: none;
+}
+
 @-webkit-keyframes spin {
   0% {
     -webkit-transform: rotate(0deg);
