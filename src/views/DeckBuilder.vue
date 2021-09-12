@@ -99,7 +99,7 @@ export default {
   methods: {
     update_deck_list() {
       this.loader_class = ""
-      axios.get('https://ygo-prog-web.herokuapp.com/collection/?', {
+      axios.get(`${process.env.VUE_APP_BACKEND_URL}/collection/?`, {
         params: {
           guild: this.guild,
           user: this.user,
@@ -113,7 +113,7 @@ export default {
       });
     },
     get_img(id) {
-      return `https://storage.googleapis.com/ygoprodeck.com/pics/${id}.jpg`
+      return `${process.env.VUE_APP_IMAGES_URL}/${id}.jpg`
     },
     right_click(event, card) {
       event.preventDefault();

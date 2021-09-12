@@ -67,9 +67,7 @@
               <option v-for="(v, i) in select_options['archetypes']" :key="i">{{ v }}</option>
             </select>
           </div>
-        </div>
 
-        <div class="row align-items-center">
           <label class="form-label col-2 d-none d-xl-block" for="filter-name">Name Matching</label>
           <div class="col">
             <input v-model="filters.name" @change="update_deck_list" class="form-control" type="text" id="filter-name"
@@ -171,7 +169,7 @@ export default {
     update_deck_list(reset = true) {
       if (reset) this.offset_reset();
       this.loader_class = ""
-      axios.get('https://ygo-prog-web.herokuapp.com/collection/?', {
+      axios.get(`${process.env.VUE_APP_BACKEND_URL}/collection/?`, {
         params: {
           guild: this.guild,
           user: this.user,
@@ -195,7 +193,7 @@ export default {
       });
     },
     update_options() {
-      axios.get('https://ygo-prog-web.herokuapp.com/collection/player_option', {
+      axios.get(`${process.env.VUE_APP_BACKEND_URL}/collection/player_option`, {
         params: {
           guild: this.guild,
           user: this.user
@@ -205,14 +203,14 @@ export default {
       });
     },
     get_img(id) {
-      return `https://storage.googleapis.com/ygoprodeck.com/pics/${id}.jpg`
+      return `${process.env.VUE_APP_IMAGES_URL}/${id}.jpg`
     },
     offset_reset() {
       this.filters.offset = 0;
     },
     offset_limit() {
       if (this.filters.offset < 0) this.filters.offset = 0;
-      if (this.filters.offset > this.card_quantity) this.filters.offset -= this.filters.limit;
+      if (this.filters.offset >= this.card_quantity) this.filters.offset -= this.filters.limit;
     },
     offset_add() {
       this.filters.offset += this.filters.limit;
@@ -224,6 +222,7 @@ export default {
     }
   },
   mounted() {
+    console.log(process.env.VUE_APP_BACKEND_URL)
     this.update_deck_list();
     this.update_options();
   },
@@ -267,10 +266,6 @@ export default {
   100% {
     transform: rotate(360deg);
   }
-}
-
-.hide {
-  display: none;
 }
 
 .fit-content {
