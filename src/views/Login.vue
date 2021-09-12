@@ -3,12 +3,12 @@
     <form class="form-signin">
       <img class="mb-4" :src="Logo" alt="" width="72" height="72">
       <h1 class="h3 mb-3 font-weight-normal">Please select your discord guild and user</h1>
-      <b-form-select v-model="guild" class="form-select input-guild" :options="guild_options"
-                     @change="update_user_options()">
-      </b-form-select>
-      <b-form-select v-model="user" class="form-select input-user" :options="user_options"></b-form-select>
-      <router-link :to="`/collection/${guild}/${user}`" class="text-white">
-        <button :disabled="user == null" class="btn btn-lg btn-primary btn-block" type="submit">Sign In</button>
+      <b-form-select v-model="guild" :disabled="!guild_options" class="form-select input-guild"
+                     :options="guild_options" @change="update_user_options()"></b-form-select>
+      <b-form-select v-model="user" :disabled="!user_options" class="form-select input-user"
+                     :options="user_options"></b-form-select>
+      <router-link :to="`/collection/${guild}/${user}`" :class="{ disabled: !user }">
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign In</button>
       </router-link>
       <p class="mt-5 mb-3 text-muted">© Eliton Machado da Silva</p>
     </form>
@@ -97,6 +97,11 @@ export default {
   margin-bottom: 10px;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
+}
+
+.disabled {
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 </style>
